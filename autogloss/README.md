@@ -4,15 +4,19 @@
 
 **таблица** *basic_info*
 
-correct_morph | POS | lemma | gloss
+inx | correct_morph | POS | lemma
 
 **таблица** *correction*
 
-correct_morph| variants
+id\_correct_\morph | written\_variants
+
+**таблица** *glosses*
+
+id\_correct_\morph | gloss\_variants
 
 **таблица** *stripped*
 
-stripped_correct\_forms | stripped_variants
+id\_correct\_morph | stripped\_correct\_forms | stripped_variants
 __________
 
 ### *TO DO:*
