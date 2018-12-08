@@ -1,6 +1,6 @@
 ## AUTOGLOSS
 
-#### Структура базы данных
+### Структура базы данных
 
 **таблица** *basic_info*
 
@@ -15,7 +15,7 @@ correct_morph| variants
 stripped_correct\_forms | stripped_variants
 __________
 
-##### *TO DO:*
+### *TO DO:*
 
 1. Сделать БД
 
