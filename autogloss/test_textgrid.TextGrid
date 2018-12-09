@@ -1,0 +1,186 @@
+File type = "ooTextFile"
+Object class = "TextGrid"
+
+xmin = 0 
+xmax = 10 
+tiers? <exists> 
+size = 7 
+item []: 
+    item [1]:
+        class = "TextTier" 
+        name = "speakerid_Transcription-txt-kna" 
+        xmin = 0 
+        xmax = 10 
+        points: size = 0 
+    item [2]:
+        class = "IntervalTier" 
+        name = "speakerid_Morph-txt-kna" 
+        xmin = 0 
+        xmax = 10 
+        intervals: size = 8 
+        intervals [1]:
+            xmin = 0 
+            xmax = 1.6271689281830646 
+            text = "" 
+        intervals [2]:
+            xmin = 1.6271689281830646 
+            xmax = 2.7773509526736326 
+            text = "" 
+        intervals [3]:
+            xmin = 2.7773509526736326 
+            xmax = 4.107831781003262 
+            text = "" 
+        intervals [4]:
+            xmin = 4.107831781003262 
+            xmax = 5.525353411186233 
+            text = "" 
+        intervals [5]:
+            xmin = 5.525353411186233 
+            xmax = 6.6755354356768 
+            text = "" 
+        intervals [6]:
+            xmin = 6.6755354356768 
+            xmax = 7.707590657652121 
+            text = "" 
+        intervals [7]:
+            xmin = 7.707590657652121 
+            xmax = 8.845338281877925 
+            text = "" 
+        intervals [8]:
+            xmin = 8.845338281877925 
+            xmax = 10 
+            text = "" 
+    item [3]:
+        class = "IntervalTier" 
+        name = "speakerid_Lemma-txt-kna" 
+        xmin = 0 
+        xmax = 10 
+        intervals: size = 8 
+        intervals [1]:
+            xmin = 0 
+            xmax = 1.6271689281830646 
+            text = "" 
+        intervals [2]:
+            xmin = 1.6271689281830646 
+            xmax = 2.7773509526736326 
+            text = "" 
+        intervals [3]:
+            xmin = 2.7773509526736326 
+            xmax = 4.107831781003262 
+            text = "" 
+        intervals [4]:
+            xmin = 4.107831781003262 
+            xmax = 5.525353411186233 
+            text = "" 
+        intervals [5]:
+            xmin = 5.525353411186233 
+            xmax = 6.6755354356768 
+            text = "" 
+        intervals [6]:
+            xmin = 6.6755354356768 
+            xmax = 7.707590657652121 
+            text = "" 
+        intervals [7]:
+            xmin = 7.707590657652121 
+            xmax = 8.845338281877925 
+            text = "" 
+        intervals [8]:
+            xmin = 8.845338281877925 
+            xmax = 10 
+            text = "" 
+    item [4]:
+        class = "IntervalTier" 
+        name = "speakerid_Gloss-txt-en" 
+        xmin = 0 
+        xmax = 10 
+        intervals: size = 8 
+        intervals [1]:
+            xmin = 0 
+            xmax = 1.6271689281830646 
+            text = "" 
+        intervals [2]:
+            xmin = 1.6271689281830646 
+            xmax = 2.7773509526736326 
+            text = "" 
+        intervals [3]:
+            xmin = 2.7773509526736326 
+            xmax = 4.107831781003262 
+            text = "" 
+        intervals [4]:
+            xmin = 4.107831781003262 
+            xmax = 5.525353411186233 
+            text = "" 
+        intervals [5]:
+            xmin = 5.525353411186233 
+            xmax = 6.6755354356768 
+            text = "" 
+        intervals [6]:
+            xmin = 6.6755354356768 
+            xmax = 7.707590657652121 
+            text = "" 
+        intervals [7]:
+            xmin = 7.707590657652121 
+            xmax = 8.845338281877925 
+            text = "" 
+        intervals [8]:
+            xmin = 8.845338281877925 
+            xmax = 10 
+            text = "" 
+    item [5]:
+        class = "IntervalTier" 
+        name = "speakerid_POS-txt-en" 
+        xmin = 0 
+        xmax = 10 
+        intervals: size = 8 
+        intervals [1]:
+            xmin = 0 
+            xmax = 1.6271689281830646 
+            text = "" 
+        intervals [2]:
+            xmin = 1.6271689281830646 
+            xmax = 2.7773509526736326 
+            text = "" 
+        intervals [3]:
+            xmin = 2.7773509526736326 
+            xmax = 4.107831781003262 
+            text = "" 
+        intervals [4]:
+            xmin = 4.107831781003262 
+            xmax = 5.525353411186233 
+            text = "" 
+        intervals [5]:
+            xmin = 5.525353411186233 
+            xmax = 6.6755354356768 
+            text = "" 
+        intervals [6]:
+            xmin = 6.6755354356768 
+            xmax = 7.707590657652121 
+            text = "" 
+        intervals [7]:
+            xmin = 7.707590657652121 
+            xmax = 8.845338281877925 
+            text = "" 
+        intervals [8]:
+            xmin = 8.845338281877925 
+            xmax = 10 
+            text = "" 
+    item [6]:
+        class = "IntervalTier" 
+        name = "ft@speakerid" 
+        xmin = 0 
+        xmax = 10 
+        intervals: size = 1 
+        intervals [1]:
+            xmin = 0 
+            xmax = 10 
+            text = "" 
+    item [7]:
+        class = "IntervalTier" 
+        name = "com@speakerid" 
+        xmin = 0 
+        xmax = 10 
+        intervals: size = 1 
+        intervals [1]:
+            xmin = 0 
+            xmax = 10 
+            text = "" 
