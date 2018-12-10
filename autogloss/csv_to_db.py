@@ -3,7 +3,7 @@ import re
 import os
 from db_utils import Database
 
-FILENAME = os.path.join("srcs", "test_concord.csv")
+filename = "test_concord.csv"
 db = Database()
 
 """
@@ -48,7 +48,7 @@ def strip_line(line):
     return line
 
 
-def info_generator():
+def info_generator(filename):
     """
 
     Collecting info from second to sixth columns
@@ -62,14 +62,15 @@ def info_generator():
     :return generator:
 
     """
-    with open(FILENAME, "r", encoding='UTF-8') as file:
+    with open(filename, "r", encoding='UTF-8') as file:
         reader = list(csv.reader(file, delimiter='\t'))
         for row in reader[1:]:
             yield [row[1], row[2], row[3], row[4], row[5]]
 
 
-def fill_basic_info():
-    for row in info_generator():
+
+def fill_basic_info(filename):
+    for row in info_generator(filename):
         db.execute('''
         INSERT INTO basic_info 
         (correct_morph, POS, lemma)
@@ -78,8 +79,8 @@ def fill_basic_info():
         db.commit()
 
 
-def fill_correction():
-    for row in info_generator():
+def fill_correction(filename):
+    for row in info_generator(filename):
         for variant in row[2].split(';'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -93,8 +94,8 @@ def fill_correction():
             db.commit()
 
 
-def fill_glosses():
-    for row in info_generator():
+def fill_glosses(filename):
+    for row in info_generator(filename):
         for variant in row[4].split('/'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -108,8 +109,8 @@ def fill_glosses():
             db.commit()
 
 
-def fill_stripped():
-    for row in info_generator():
+def fill_stripped(filename):
+    for row in info_generator(filename):
         for variant in row[2].split(';'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -123,11 +124,17 @@ def fill_stripped():
             db.commit()
 
 
-def main():
-    fill_basic_info()
-    fill_correction()
-    fill_glosses()
-    fill_stripped()
+def database_filling(filename):
+    try:
+        fill_basic_info(filename)
+        fill_correction(filename)
+        fill_glosses(filename)
+        fill_stripped(filename)
+        print("Database has been created successfully.\n")
+        return 0
+    except FileNotFoundError:
+        print("\nThe file is not found or invalid. The process has been aborted.")
+        return -1
 
 
 if __name__ == "__main__":

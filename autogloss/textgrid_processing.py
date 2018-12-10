@@ -10,46 +10,49 @@ db = Database()
 
 
 class ParseTextGrid:
-    """
-    :return [...
-        Interval(start, end, label),
-        ...]
-    """
-    def __init__(self, filename):
+    def __init__(self, srcs, out, filename):
         self.filename = filename
-        self.tg = tgio.openTextgrid(os.path.join(SRCS, filename))
+        self.srcs = srcs
+        self.out = out
+
+    def file_open(self):
+        return tgio.openTextgrid(os.path.join(self.srcs, self.filename))
 
     def morph(self):
-        morph_tier = self.tg.tierDict["speakerid_Morph-txt-kna"]
+        tg = self.file_open()
+        morph_tier = tg.tierDict["speakerid_Morph-txt-kna"]
         morph_list = [list(word) for word in morph_tier.entryList]
         return morph_list
 
     def lemma(self):
-        lemma_tier = self.tg.tierDict["speakerid_Lemma-txt-kna"]
+        tg = self.file_open()
+        lemma_tier = tg.tierDict["speakerid_Lemma-txt-kna"]
         lemma_list = [list(word) for word in lemma_tier.entryList]
         return lemma_list
 
     def gloss(self):
-        gloss_tier = self.tg.tierDict["speakerid_Gloss-txt-en"]
+        tg = self.file_open()
+        gloss_tier = tg.tierDict["speakerid_Gloss-txt-en"]
         gloss_list = [list(word) for word in gloss_tier.entryList]
         return gloss_list
 
     def pos(self):
-        pos_tier = self.tg.tierDict["speakerid_POS-txt-en"]
+        tg = self.file_open()
+        pos_tier = tg.tierDict["speakerid_POS-txt-en"]
         pos_list = [list(word) for word in pos_tier.entryList]
         return pos_list
 
-    def alternate_tier(self, entry_list, tier_name):
+    def alternate_tier(self, entry_list, tier_name, tg):
         entry_tuple = [tuple(word) for word in entry_list]
         alternation = tgio.IntervalTier(name=tier_name, entryList=entry_tuple)  # массив кортежей => объект praatio
-        self.tg.replaceTier(tier_name, alternation)
-        self.tg.save(os.path.join(OUT, self.filename))
+        tg.replaceTier(tier_name, alternation)
+        tg.save(os.path.join(self.out, self.filename))
 
 
 class FirstGlossing(ParseTextGrid):
 
-    def __init__(self, filename):
-        super().__init__(filename=filename)
+    def __init__(self, filename, srcs, out):
+        super().__init__(filename=filename, srcs=srcs, out=out)
 
     def gloss_morph(self):
         morph_updated = self.morph()
@@ -124,46 +127,20 @@ class FirstGlossing(ParseTextGrid):
                 pass
         return pos
 
-#ГДЕ-ТО ТУТ ГОНЕВО, ВОЗМОЖНО, НАДО ДЕЛАТЬ SAVE TG или перевызывать класс
     def total_annotation(self):
-        self.alternate_tier(self.gloss_morph(), "speakerid_Morph-txt-kna")
-        self.alternate_tier(self.add_lemma(), "speakerid_Lemma-txt-kna")
-        self.alternate_tier(self.add_gloss(), "speakerid_Gloss-txt-en")
-        self.alternate_tier(self.add_pos(), "speakerid_POS-txt-en")
+        tg = self.file_open()
+        self.alternate_tier(self.gloss_morph(), "speakerid_Morph-txt-kna", tg)
+        self.alternate_tier(self.add_lemma(), "speakerid_Lemma-txt-kna", tg)
+        self.alternate_tier(self.add_gloss(), "speakerid_Gloss-txt-en", tg)
+        self.alternate_tier(self.add_pos(), "speakerid_POS-txt-en", tg)
 
 
 class Regloss(ParseTextGrid):
-    def __init__(self, filename):
-        super().__init__(filename=filename)
-
-
-def test_praatio():
-    print(tg.tierNameList)
-
-    tier = tg.tierDict["speakerid_Morph-txt-kna"]
-
-    print(tier.entryList)
-
-    for el in tier.entryList:
-        print(str(el.start) + '\t' + str(el.end) + '\t' + el.label)
-
-    newTG = tg.new()
-    newTier = tier.new()
-
-    # если всунуть массив с новыми данными, получится ли новый текстгрид? навряд ли
-    emptiedTier = tier.new(entryList=[])
-
-    #НЕТ, МОЖНО, только надо tulpe
-
-    # We've already seen how to add a new tier to a TextGrid
-    # Here we add a new tier, 'utterance', which has one entry that spans the length of the textgrid
-    utteranceTier = tgio.IntervalTier(name='utterance', entryList=[('0', tg.maxTimestamp, 'mary rolled the barrel'), ],
-                                  minT=0, maxT=tg.maxTimestamp)
-    tg.addTier(utteranceTier)
-    print(tg.tierNameList)
+    def __init__(self, filename, srcs, out):
+        super().__init__(filename=filename, srcs=srcs, out=out)
 
 
 if __name__ == "__main__":
     if FLAG == 'FIRST':
-        parse = FirstGlossing("test_firstgloss.TextGrid")
-        print(parse.add_gloss())
+        parse = FirstGlossing("test_firstgloss.TextGrid", SRCS, OUT)
+        parse.total_annotation()
