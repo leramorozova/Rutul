@@ -1,7 +1,9 @@
 import csv
+import re
+import os
 from db_utils import Database
 
-FILENAME = "test_concord.csv"
+FILENAME = os.path.join("srcs", "test_concord.csv")
 db = Database()
 
 """
@@ -22,6 +24,30 @@ db = Database()
 """
 
 
+def resub_shortcats(line):
+    line = re.sub(r'\\i-', 'ɨ', line)
+    line = re.sub('\|', 'ˤ', line)
+    return line
+
+
+def strip_gloss_signs(line):
+    for i in range(1, len(line) - 2):
+        if i > 1:
+            if line[i] == '-' and line[i - 2] != '\\':
+                line = line[:i] + line[i + 1:]
+        elif i == 1:
+            if line[i] == '-' and line[i - 1] != 'i':
+                line = line[:i] + line[i + 1:]
+    line = re.sub('[<>=./,]', '', line)
+    return line
+
+
+def strip_line(line):
+    line = resub_shortcats(line)
+    line = strip_gloss_signs(line)
+    return line
+
+
 def info_generator():
     """
 
@@ -32,6 +58,8 @@ def info_generator():
     generator[2] - morph variants
     generator[3] - correct morph
     generator[4] - gloss
+
+    :return generator:
 
     """
     with open(FILENAME, "r", encoding='UTF-8') as file:
@@ -80,10 +108,26 @@ def fill_glosses():
             db.commit()
 
 
+def fill_stripped():
+    for row in info_generator():
+        for variant in row[2].split(';'):
+            res = db.execute('''
+            SELECT inx FROM basic_info
+            WHERE correct_morph = %s
+            ''', (row[3]))
+            db.execute('''
+            INSERT INTO stripped
+            (id_correct_morph, stripped_correct_forms, stripped_written_variants)
+            VALUES (%s, %s, %s)
+            ''', (res[0][0], strip_line(row[3]), strip_gloss_signs(variant)))
+            db.commit()
+
+
 def main():
     fill_basic_info()
     fill_correction()
     fill_glosses()
+    fill_stripped()
 
 
 if __name__ == "__main__":

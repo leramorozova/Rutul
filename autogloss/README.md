@@ -8,17 +8,24 @@ inx | correct_morph | POS | lemma
 
 **таблица** *correction*
 
-id\_correct_\morph | written\_variants
+id\_correct\_morph | written\_variants
 
 **таблица** *glosses*
 
-id\_correct_\morph | gloss\_variants
+id\_correct\_morph | gloss\_variants
 
 **таблица** *stripped*
 
 id\_correct\_morph | stripped\_correct\_forms | stripped_variants
 __________
 
+### HOW TO USE
+
+1. запустить csv_to_db.py в том случае, если необходимо дополнить базу данных новым конкордансом из csv-файла
+
+2. ...
+
+__________
 ### *TO DO:*
 
 1. Сделать БД
