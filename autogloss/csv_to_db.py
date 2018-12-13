@@ -102,7 +102,7 @@ def fill_glosses(filename):
             WHERE correct_morph = %s
             ''', (row[3]))
             db.execute('''
-            INSERT INTO glosses 
+            INSERT INTO glosses
             (id_correct_morph, gloss_variants)
             VALUES (%s, %s)
             ''', (res[0][0], variant))
@@ -135,7 +135,3 @@ def database_filling(filename):
     except FileNotFoundError:
         print("\nThe file is not found or invalid. The process has been aborted.")
         return -1
-
-
-if __name__ == "__main__":
-    main()
