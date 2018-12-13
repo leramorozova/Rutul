@@ -34,6 +34,7 @@ def main():
             for file in files:
                 parse = FirstGlossing(file, srcs, out)
                 parse.total_annotation()
+            return print("\nFinish!")
         except FileNotFoundError:
             print("\nIncorrect input. The process has been aborted.")
         return 0
@@ -45,11 +46,12 @@ def main():
             print("Enter the root to an output dir (it should be another one, otherwise your files will be rewrited.")
             out = input()
             print("\nSource directory is " + os.path.abspath(srcs))
-            print("Output directory is " + os.path.abspath(out))
+            print("Output directory is " + os.path.abspath(out) + '\n')
             files = os.listdir(srcs)
             for file in files:
                 parse = Regloss(file, srcs, out)
-                parse.total_annotation()
+                parse.total_reglossing()
+            return print("\nFinish!")
         except FileNotFoundError:
             print("\nIncorrect input. The process has been aborted.")
         return 0

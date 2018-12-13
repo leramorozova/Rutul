@@ -75,7 +75,7 @@ class FirstGlossing(ParseTextGrid):
                         """, inx)
                 word[2] = res[0][0]
             except IndexError:
-                pass
+                word[2] = ""
         return lemma_updated
 
     def add_gloss(self):
@@ -94,7 +94,7 @@ class FirstGlossing(ParseTextGrid):
                 variants = [gloss[0] for gloss in res]
                 word[2] = '/'.join(variants)
             except IndexError:
-                pass
+                word[2] = ""
         return glosses
 
     def add_pos(self):
@@ -112,7 +112,7 @@ class FirstGlossing(ParseTextGrid):
                         """, inx)
                 word[2] = res[0][0]
             except IndexError:
-                pass
+                word[2] = ""
         return pos
 
     def total_annotation(self):
@@ -121,7 +121,7 @@ class FirstGlossing(ParseTextGrid):
         self.alternate_tier(self.add_lemma(), "speakerid_Lemma-txt-kna", tg)
         self.alternate_tier(self.add_gloss(), "speakerid_Gloss-txt-en", tg)
         self.alternate_tier(self.add_pos(), "speakerid_POS-txt-en", tg)
-        print(self.filename + "has been glossed successfully!")
+        print(self.filename + " has been glossed successfully!")
 
 
 class Regloss(ParseTextGrid):
@@ -225,8 +225,9 @@ class Regloss(ParseTextGrid):
 
     def total_reglossing(self):
         tg = self.file_open()
+        print("I am here\n")
         self.alternate_tier(self.correct_morph(), "speakerid_Morph-txt-kna", tg)
         self.alternate_tier(self.readd_lemma(), "speakerid_Lemma-txt-kna", tg)
         self.alternate_tier(self.correct_gloss(), "speakerid_Gloss-txt-en", tg)
         self.alternate_tier(self.readd_pos(), "speakerid_POS-txt-en", tg)
-        print(self.filename + "has been reglossed successfully!")
+        print(self.filename + " has been reglossed successfully!")
