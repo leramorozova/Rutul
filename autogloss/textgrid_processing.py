@@ -4,8 +4,6 @@ from praatio import tgio
 from csv_to_db import strip_line
 from db_utils import Database
 
-SRCS = "srcs"
-OUT = "out"
 db = Database()
 
 
@@ -38,9 +36,8 @@ class ParseTextGrid:
 
 
 class FirstGlossing(ParseTextGrid):
-
-    def __init__(self, filename, srcs, out):
-        super().__init__(filename=filename, srcs=srcs, out=out)
+    def __init__(self, srcs, out, filename):
+        super().__init__(srcs=srcs, out=out, filename=filename)
 
     def gloss_bare_morph(self):
         morph_updated = self.morph()
@@ -125,12 +122,22 @@ class FirstGlossing(ParseTextGrid):
 
 
 class Regloss(ParseTextGrid):
-    def __init__(self, filename, srcs, out):
-        super().__init__(filename=filename, srcs=srcs, out=out)
+    def __init__(self, srcs, out, filename):
+        super().__init__(srcs=srcs, out=out, filename=filename)
+
+    @staticmethod
+    def define_punctuation(morph):
+        punct = None
+        if_punct = re.search("(\.\.\.)|//|[(\.),?!/]", morph)
+        if if_punct is not None:
+            punct = if_punct.group(0)
+            morph = morph[:-len(punct)]
+        return morph, punct
 
     def correct_morph(self):
         morph_updated = self.morph()
         for word in morph_updated:
+            word[2], punct = self.define_punctuation(word[2])
             res = db.execute("""
             SELECT id_correct_morph FROM correction
             WHERE written_variants = %s
@@ -144,6 +151,8 @@ class Regloss(ParseTextGrid):
                 word[2] = res[0][0]
             except IndexError:
                 pass
+            if punct is not None:
+                word[2] += punct
         return morph_updated
 
     @staticmethod
@@ -162,6 +171,7 @@ class Regloss(ParseTextGrid):
         glosses = self.gloss()
         morph = self.morph()
         for i in range(len(glosses)):
+            morph[i][2], punct = self.define_punctuation(morph[i][2])
             class_marker, if_be = self.disambiguishing(glosses[i][2])
             res = db.execute("""
                      SELECT id_correct_morph FROM correction
@@ -190,6 +200,7 @@ class Regloss(ParseTextGrid):
     def readd_lemma(self):
         lemma_updated = self.morph()
         for word in lemma_updated:
+            word[2], punct = self.define_punctuation(word[2])
             res = db.execute("""
                     SELECT id_correct_morph FROM correction
                     WHERE written_variants = %s
@@ -208,6 +219,7 @@ class Regloss(ParseTextGrid):
     def readd_pos(self):
         pos = self.morph()
         for word in pos:
+            word[2], punct = self.define_punctuation(word[2])
             res = db.execute("""
                     SELECT id_correct_morph FROM correction
                     WHERE written_variants = %s
@@ -225,9 +237,8 @@ class Regloss(ParseTextGrid):
 
     def total_reglossing(self):
         tg = self.file_open()
-        print("I am here\n")
         self.alternate_tier(self.correct_morph(), "speakerid_Morph-txt-kna", tg)
         self.alternate_tier(self.readd_lemma(), "speakerid_Lemma-txt-kna", tg)
         self.alternate_tier(self.correct_gloss(), "speakerid_Gloss-txt-en", tg)
         self.alternate_tier(self.readd_pos(), "speakerid_POS-txt-en", tg)
-        print(self.filename + " has been reglossed successfully!")
+        print(self.s + " has been reglossed successfully!")

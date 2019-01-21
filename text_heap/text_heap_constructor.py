@@ -59,6 +59,7 @@ class MakeGlossLine(ParseTextGrid):
         morph_line = re.sub("<r>", "&lt;r&gt;", morph_line)
         morph_line = re.sub("<d>", "&lt;d&gt;", morph_line)
         morph_line = re.sub("<t>", "&lt;t&gt;", morph_line)
+        morph_line = re.sub("<l>", "&lt;l&gt;", morph_line)
         gloss_line = re.sub("<HPL>", "&lt;HPL&gt;", gloss_line)
         gloss_line = re.sub("<APL>", "&lt;APL&gt;", gloss_line)
         return morph_line, gloss_line
@@ -126,7 +127,7 @@ Starting html construction
 
 def write_html_header(func):
     @wraps(func)
-    def wrapper(filename):
+    def wrapper():
         header = """ <!DOCTYPE html>
         <html>
         <head>
@@ -153,7 +154,7 @@ def write_html_header(func):
         with open("text_heap.html", 'a', encoding="UTF-8") as html:
             html.write(header)
         html.close()
-        func(filename)
+        func()
         bottom = """
         </body>
         </html>
@@ -165,20 +166,21 @@ def write_html_header(func):
 
 
 @write_html_header
-def put_texts(filename):
-    with open("text_heap.html", 'a', encoding="UTF-8") as html:
-        html.write("<center><b><caption><font size=\"5\"> \n" + filename.split('.')[0])
-        html.write("\n</font></center></b></caption><br>")
-        html.close()
-    print(filename)
-    parser = MakeGlossLine(os.path.join("srcs", filename))
-    for el in parser.make_line():
+def put_texts():
+    for filename in os.listdir("srcs"):
         with open("text_heap.html", 'a', encoding="UTF-8") as html:
-            html.write("<table class=\"example\">\n" + el[0] + '\n' + el[1] + '\n' + "</table>")
-        html.close()
-    with open("text_heap.html", 'a', encoding="UTF-8") as html:
-        html.write("<p>\n" + parser.translation_block() + "</p><br><br>")
-        html.close()
+            html.write("<center><b><caption><font size=\"5\"> \n" + filename.split('.')[0])
+            html.write("\n</font></center></b></caption><br>")
+            html.close()
+        print(filename)
+        parser = MakeGlossLine(os.path.join("srcs", filename))
+        for el in parser.make_line():
+            with open("text_heap.html", 'a', encoding="UTF-8") as html:
+                html.write("<table class=\"example\">\n" + el[0] + '\n' + el[1] + '\n' + "</table>")
+            html.close()
+        with open("text_heap.html", 'a', encoding="UTF-8") as html:
+            html.write("<p>\n" + parser.translation_block() + "</p><br><br>")
+            html.close()
 
 
 def main():
@@ -186,8 +188,7 @@ def main():
         os.remove("text_heap.html")
     except Exception:
         pass
-    for tg in os.listdir("srcs"):
-        put_texts(tg)
+    put_texts()
     print("\nКолчество лексем в копрусе: " + str(LEXEMES))
 
 
