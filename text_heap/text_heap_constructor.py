@@ -60,6 +60,7 @@ class MakeGlossLine(ParseTextGrid):
         morph_line = re.sub("<d>", "&lt;d&gt;", morph_line)
         morph_line = re.sub("<t>", "&lt;t&gt;", morph_line)
         morph_line = re.sub("<l>", "&lt;l&gt;", morph_line)
+        morph_line = re.sub("<p>", "&lt;p&gt;", morph_line)
         gloss_line = re.sub("<HPL>", "&lt;HPL&gt;", gloss_line)
         gloss_line = re.sub("<APL>", "&lt;APL&gt;", gloss_line)
         return morph_line, gloss_line

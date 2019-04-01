@@ -1,40 +1,21 @@
+"""
+    Script converting csv concordance into a mysql database
+"""
+
 import csv
 import re
 import os
 from db_utils import Database
 
-filename = "test_concord.csv"
+csv_name = "concord.csv"
 db = Database()
-
-"""
-        Database contains:
-
-        table "basic_info"
-    inx | correct_morhp | POS | lemma
-
-        table "correction"
-    id_correct_morph | written_variants
-
-        table "glosses"
-    id_correct_morph | gloss_variants
-
-        table "stripped"
-    id_correct_morph | stripped_correct_forms | stripped_written_variants
-
-"""
-
-
-def resub_shortcats(line):
-    line = re.sub(r'\\i-', 'ɨ', line)
-    line = re.sub('\|', 'ˤ', line)
-    return line
 
 
 def strip_gloss_signs(line):
     for i in range(1, len(line) - 2):
-        if i > 1:
+        if 1 < i < len(line):
             if line[i] == '-' and line[i - 2] != '\\':
-                line = line[:i] + line[i + 1:]
+                line = line[:i] + line[(i + 1):]
         elif i == 1:
             if line[i] == '-' and line[i - 1] != 'i':
                 line = line[:i] + line[i + 1:]
@@ -43,7 +24,6 @@ def strip_gloss_signs(line):
 
 
 def strip_line(line):
-    line = resub_shortcats(line)
     line = strip_gloss_signs(line)
     return line
 
@@ -52,7 +32,7 @@ def info_generator(filename):
     """
 
     Collecting info from second to sixth columns
-    from a csv concordance.
+    of a csv concordance
     generator[0] - POS
     generator[1] - lemma
     generator[2] - morph variants
@@ -63,16 +43,17 @@ def info_generator(filename):
 
     """
     with open(filename, "r", encoding='UTF-8') as file:
-        reader = list(csv.reader(file, delimiter='\t'))
+        reader = list(csv.reader(file, delimiter=','))
         for row in reader[1:]:
             yield [row[1], row[2], row[3], row[4], row[5]]
 
 
-
 def fill_basic_info(filename):
+    print("EXECUTING BASE INFO FILLING")
     for row in info_generator(filename):
+        print(row)
         db.execute('''
-        INSERT INTO basic_info 
+        INSERT INTO basic_info
         (correct_morph, POS, lemma)
         VALUES (%s, %s, %s)
         ''', (row[3], row[0], row[1]))
@@ -80,7 +61,9 @@ def fill_basic_info(filename):
 
 
 def fill_correction(filename):
+    print("FILLING CORRECTION TABLE")
     for row in info_generator(filename):
+        print(row)
         for variant in row[2].split(';'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -95,7 +78,9 @@ def fill_correction(filename):
 
 
 def fill_glosses(filename):
+    print("INSERTING GLOSSES")
     for row in info_generator(filename):
+        print(row)
         for variant in row[4].split('/'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -110,7 +95,9 @@ def fill_glosses(filename):
 
 
 def fill_stripped(filename):
+    print("STRIPPING VARIANTS")
     for row in info_generator(filename):
+        print(row)
         for variant in row[2].split(';'):
             res = db.execute('''
             SELECT inx FROM basic_info
