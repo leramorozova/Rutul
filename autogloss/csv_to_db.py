@@ -122,3 +122,7 @@ def database_filling(filename):
     except FileNotFoundError:
         print("\nThe file is not found or invalid. The process has been aborted.")
         return -1
+
+
+if __name__ == "__main__":
+    database_filling(csv_name)

@@ -156,23 +156,55 @@ class Regloss(ParseTextGrid):
         return morph_updated
 
     @staticmethod
-    def disambiguishing(word):
-        class_marker = re.search("[1-4]", word.replace('\\', ''))
-        if_be = re.search("aux|be|cop", word.replace('\\', '').lower())
+    def disambiguate(variants, old_gloss):
+        """
+        The function removes homonymy variants
+        :param variants: array of glossing variants
+               old_gloss: gloss from TG file
+        :return: the only correct disambiguished variant
+        """
+        if len(variants) == 1:
+            return variants[0]
+        old_gloss = old_gloss.replace('\\', '').lower()
+        class_marker = re.search("[1-4]|hpl|npl|apl", old_gloss)
+        if_be = re.search("aux|be|cop1", old_gloss)
+        if_go = re.search("go", old_gloss)
         if class_marker is not None:
             class_marker = class_marker.group(0)
-        if if_be is not None:
-            if_be = "COP"
-        else:
-            if_be = "go"
-        return class_marker, if_be
+        for var in variants:
+            if class_marker is not None:
+                if if_be is not None:
+                    if_be = "COP"
+                    if class_marker in var and if_be in var:
+                        return var
+                elif if_go is not None:
+                    if_go = "go"
+                    if class_marker in var and if_go in var:
+                        return var
+                elif "force" in old_gloss and "force" in var and class_marker in var:
+                    return var
+                elif "see" in old_gloss and "see" in var and class_marker in var:
+                    return var
+                else:
+                    if class_marker in var:
+                        return var
+            elif "you" in old_gloss:
+                if "sg" in old_gloss and "sg" in var:
+                    return var
+                elif "pl" in old_gloss and "pl" in var:
+                    return var
+            elif "name" in old_gloss and "name" in var:
+                return var
+            elif "spoon" in old_gloss and "spoon" in var:
+                return var
+
+        return variants
 
     def correct_gloss(self):
         glosses = self.gloss()
         morph = self.morph()
         for i in range(len(glosses)):
             morph[i][2], punct = self.define_punctuation(morph[i][2])
-            class_marker, if_be = self.disambiguishing(glosses[i][2])
             res = db.execute("""
                      SELECT id_correct_morph FROM correction
                      WHERE written_variants = %s
@@ -184,15 +216,8 @@ class Regloss(ParseTextGrid):
                         WHERE id_correct_morph = %s
                         """, inx)
                 variants = [gloss[0] for gloss in res]
-                for var in variants:
-                    if class_marker is not None:
-                        if class_marker in var and if_be in var:
-                            glosses[i][2] = var
-                        elif class_marker in var and var.find("COP") == -1 \
-                                and var.find("go") == -1:
-                            glosses[i][2] = var
-                    else:
-                        glosses[i][2] = var
+                #glosses[i][2] = disambiguate(variants)
+                print(self.disambiguate(variants, glosses[i][2]))
             except IndexError:
                 pass
         return glosses
@@ -242,3 +267,7 @@ class Regloss(ParseTextGrid):
         self.alternate_tier(self.correct_gloss(), "speakerid_Gloss-txt-en", tg)
         self.alternate_tier(self.readd_pos(), "speakerid_POS-txt-en", tg)
         print(self.s + " has been reglossed successfully!")
+
+
+reg = Regloss("srcs", "out", "test_regloss.TextGrid")
+reg.correct_gloss()
