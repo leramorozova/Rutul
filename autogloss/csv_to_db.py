@@ -51,7 +51,7 @@ def info_generator(filename):
 def fill_basic_info(filename):
     print("EXECUTING BASE INFO FILLING")
     for row in info_generator(filename):
-        print(row)
+        #print(row)
         db.execute('''
         INSERT INTO basic_info
         (correct_morph, POS, lemma)
@@ -63,7 +63,7 @@ def fill_basic_info(filename):
 def fill_correction(filename):
     print("FILLING CORRECTION TABLE")
     for row in info_generator(filename):
-        print(row)
+        #print(row)
         for variant in row[2].split(';'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -80,7 +80,7 @@ def fill_correction(filename):
 def fill_glosses(filename):
     print("INSERTING GLOSSES")
     for row in info_generator(filename):
-        print(row)
+        #print(row)
         for variant in row[4].split('/'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -97,7 +97,7 @@ def fill_glosses(filename):
 def fill_stripped(filename):
     print("STRIPPING VARIANTS")
     for row in info_generator(filename):
-        print(row)
+        #print(row)
         for variant in row[2].split(';'):
             res = db.execute('''
             SELECT inx FROM basic_info
@@ -116,13 +116,12 @@ def database_filling(filename):
         fill_basic_info(filename)
         fill_correction(filename)
         fill_glosses(filename)
-        fill_stripped(filename)
+        #fill_stripped(filename)
         print("Database has been created successfully.\n")
         return 0
     except FileNotFoundError:
         print("\nThe file is not found or invalid. The process has been aborted.")
         return -1
 
+#database_filling("concord.csv")
 
-if __name__ == "__main__":
-    database_filling(csv_name)
