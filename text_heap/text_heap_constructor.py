@@ -69,6 +69,7 @@ class MakeGlossLine(ParseTextGrid):
         lines = []
         morph = self.morph()
         gloss = self.gloss()
+        translation = self.translation()
         idxs = self.sent_start_end(morph)
         max = 9
         for i, sentence in enumerate(idxs):
@@ -89,36 +90,21 @@ class MakeGlossLine(ParseTextGrid):
                     morph_line, gloss_line = self.remove_tags(morph_line, gloss_line)
                     morph_line += "</tr>"
                     gloss_line += "</tr>"
-                    lines.append((morph_line, gloss_line))
+                    lines.append((morph_line, gloss_line, None))
                     morph_line = "<tr>"
                     gloss_line = "<tr>"
                     max = 9
+            trans_line = translation[i][2].capitalize()
+            if trans_line[-1] in ",.?!/:":
+                pass
+            else:
+                trans_line += '.'
             morph_line, gloss_line = self.remove_tags(morph_line, gloss_line)
             morph_line += "</tr>"
             gloss_line += "</tr>"
-            lines.append((morph_line, gloss_line))
+            lines.append((morph_line, gloss_line, trans_line)) # вот сюда вклинить транслейт лайн
             max = 9
         return lines
-
-    def translation_block(self):
-        block = ''
-        morph = self.morph()
-        translation = self.translation()
-        idxs = self.sent_start_end(morph)
-        i = 1
-        for el in idxs:
-            start = morph[el[0]][0]
-            for sent in translation:
-                if sent[0] == start:
-                    block += '(' + str(i) + ') '
-                    block += sent[2].capitalize()
-                    if sent[2][-1] in ',.?!/:':
-                        pass
-                    else:
-                        block += '.'
-                    block += '<br> '
-                    i += 1
-        return block
 
 """
 Starting html construction
@@ -143,11 +129,6 @@ def write_html_header(func):
             padding: 1px; /* Поля */
             white-space: pre;
             }
-        p {
-            width: 80%;
-            border: 1px solid black;
-            padding: 10px;
-        }
         </style>
         </head>
         <body>
@@ -178,9 +159,11 @@ def put_texts():
         for el in parser.make_line():
             with open("text_heap.html", 'a', encoding="UTF-8") as html:
                 html.write("<table class=\"example\">\n" + el[0] + '\n' + el[1] + '\n' + "</table>")
+                if el[2] is not None:
+                    html.write("\n\n<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\' " + el[2] + " \'</p>\n\n")
             html.close()
         with open("text_heap.html", 'a', encoding="UTF-8") as html:
-            html.write("<p>\n" + parser.translation_block() + "</p><br><br>")
+            html.write("<br><br><br>")
             html.close()
 
 
