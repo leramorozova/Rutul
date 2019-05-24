@@ -1,6 +1,10 @@
 from praatio import tgio
 from collections import Counter
 import re
+import os
+
+verbs = Counter()
+nouns = Counter()
 
 
 class ParseTextGrid:
@@ -31,31 +35,57 @@ class ParseTextGrid:
 
 class CountingTG(ParseTextGrid):
     def count_nouns(self):
-        nouns = Counter()
+        global nouns
         morph_layer = self.morph()
         gloss_layer = self.gloss()
         pos_layer = self.pos()
-        for i in range(len(morph_layer)):
+        for i in range(len(pos_layer)):
             if pos_layer[i] == 'n':
                 noun = re.sub("[,.!\"/]", "", morph_layer[i])
                 nouns.update([(noun, gloss_layer[i])])
         return dict(nouns)
 
     def count_verbs(self):
-        verbs = Counter()
+        global verbs
         morph_layer = self.morph()
         gloss_layer = self.gloss()
         pos_layer = self.pos()
-        for i in range(len(morph_layer)):
+        for i in range(len(pos_layer)):
             if pos_layer[i] == "vb":
-                print(morph_layer[i])
-                print(pos_layer[i], pos_layer[i + 1])
-        #    if pos_layer[i] == 'n':
-        #        noun = re.sub("[,.!\"/]", "", morph_layer[i])
-        #        nouns.update([(noun, gloss_layer[i])])
-        #return dict(nouns)
+                complex = morph_layer[i] + " " + morph_layer[i + 1]
+                glosses = gloss_layer[i] + " " + gloss_layer[i + 1]
+                complex = re.sub("[,.!\"/]", "", complex)
+                verbs.update([(complex, glosses)])
+                i += 1
+            elif pos_layer[i] == "v":
+                verb = re.sub("[,.!\"/]", "", morph_layer[i])
+                verbs.update([(verb, gloss_layer[i])])
+            elif pos_layer[i] == "stat":
+                stat = re.sub("[,.!\"/]", "", morph_layer[i])
+                verbs.update([(stat, gloss_layer[i])])
+        return dict(verbs)
 
 
-CT = CountingTG("srcs/Magomedshapi_Nina_glossed_23_07latin.TextGrid")
-CT.count_verbs()
+def doc_write(fd, dict):
+    for key in dict:
+        row = ','.join([str(dict[key]), key[0], key[1]]) + '\n'
+        print(row)
+        fd.write(row)
 
+
+for file in os.listdir("srcs"):
+    print(file)
+    CT = CountingTG(os.path.join("srcs", file))
+    verb_dict = CT.count_verbs()
+    noun_dict = CT.count_nouns()
+
+
+with open("verb_list.csv", "a", encoding="UTF-8") as verb_fd:
+    for key in verb_dict:
+        row = ','.join([str(verb_dict[key]), key[0], key[1]]) + '\n'
+        verb_fd.write(row)
+
+with open("noun_list.csv", "a", encoding="UTF-8") as noun_fd:
+    for key in noun_dict:
+        row = ','.join([str(noun_dict[key]), key[0], key[1]]) + '\n'
+        noun_fd.write(row)
