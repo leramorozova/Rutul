@@ -70,9 +70,6 @@ class CountingTG(ParseTextGrid):
             elif pos_layer[i] == "v":
                 verb = re.sub("[,.!\"/]", "", morph_layer[i])
                 verbs.update([(verb, gloss_layer[i], lemma_layer[i])])
-            elif pos_layer[i] == "stat":
-                stat = re.sub("[,.!\"/]", "", morph_layer[i])
-                verbs.update([(stat, gloss_layer[i], lemma_layer[i])])
         return dict(verbs)
 
     def count_adj(self):
@@ -105,15 +102,15 @@ for file in os.listdir("srcs"):
 
 with open("verb_list.csv", "a", encoding="UTF-8") as verb_fd:
     for key in verb_dict:
-        row = ','.join([str(verb_dict[key]), key[0], key[1]]) + '\n'
+        row = ','.join([str(verb_dict[key]), key[0], key[1], key[2]]) + '\n'
         verb_fd.write(row)
 
 with open("noun_list.csv", "a", encoding="UTF-8") as noun_fd:
     for key in noun_dict:
-        row = ','.join([str(noun_dict[key]), key[0], key[1]]) + '\n'
+        row = ','.join([str(noun_dict[key]), key[0], key[1], key[2]]) + '\n'
         noun_fd.write(row)
 
 with open("adj_list.csv", "a", encoding="UTF-8") as adj_fd:
     for key in adj_dict:
-        row = ','.join([str(adj_dict[key]), key[0], key[1]]) + '\n'
+        row = ','.join([str(adj_dict[key]), key[0], key[1], key[2]]) + '\n'
         adj_fd.write(row)

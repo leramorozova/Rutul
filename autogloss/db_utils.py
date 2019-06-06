@@ -1,13 +1,14 @@
-import pymysql as pm
+#import pymysql as pm
+import sqlite3
 
-USER = 'root'
-PASSWORD = '8kNEEb8w'
-NAME = 'rutul_concord'
+#USER = 'root'
+#PASSWORD = '8kNEEb8w'
+#NAME = 'rutul_concord'
 
 
 class Database:
     def __init__(self):
-        self._connection = pm.connect(user=USER, password=PASSWORD, db=NAME, charset='utf8')
+        self._connection = sqlite3.connect("Rutul.db")
 
     def commit(self):
         self._connection.commit()
